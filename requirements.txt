@@ -46,7 +46,7 @@ packaging==24.2
 parso==0.8.4
 platformdirs==4.3.6
 prompt_toolkit==3.0.48
-protobuf==5.28.3
+protobuf>=3.19.6,<5.0.0
 psutil==6.1.0
 pure_eval==0.2.3
 Pygments==2.18.0
