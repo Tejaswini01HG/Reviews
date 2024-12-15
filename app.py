@@ -13,7 +13,7 @@
 # app = Flask(__name__)
 
 # # Load pre-trained Keras model
-# model = load_model('mymodel.keras')
+# model = load_model('mymodel.keras' custom_objects={'InputLayer': tf.keras.layers.InputLayer})
 
 # # Tokenizer (must match the one used during model training)
 # tokenizer = Tokenizer(num_words=10000)
