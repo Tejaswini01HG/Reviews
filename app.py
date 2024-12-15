@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, render_template_string
+import tensorflow as tf
 from datetime import datetime
 from pymongo import MongoClient, ASCENDING
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
