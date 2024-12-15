@@ -14,7 +14,6 @@ executing==2.1.0
 Flask==3.1.0
 Flask-MySQLdb==2.0.0
 flatbuffers==24.3.25
-gast==0.6.0
 google-pasta==0.2.0
 grpcio==1.68.0
 gunicorn==23.0.0
@@ -46,7 +45,7 @@ packaging==24.2
 parso==0.8.4
 platformdirs==4.3.6
 prompt_toolkit==3.0.48
-protobuf>=3.19.6,<5.0.0
+protobuf>=3.20.0
 psutil==6.1.0
 pure_eval==0.2.3
 Pygments==2.18.0
