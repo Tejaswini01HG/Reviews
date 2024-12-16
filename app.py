@@ -6,12 +6,10 @@ import logging
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-import joblib  # For loading tokenizer
-import tensorflow as tf
-import json
-from keras.layers import InputLayer
-from tensorflow.keras.models import load_model
+import joblib
 import os
+import tensorflow as tf
+
 # Initialize Flask app
 app = Flask(__name__)
 
@@ -21,37 +19,19 @@ analyzer = SentimentIntensityAnalyzer()
 # Set up logging for error tracking
 logging.basicConfig(level=logging.ERROR)
 
-
-#from tensorflow.keras.models import load_model
-
-# Load the model
+# Load the trained TensorFlow model
 model = tf.keras.models.load_model("mymodel.keras")
 
-# Inspect the InputLayer and adjust the config
-for layer in model_config['config']['layers']:
-    if layer['class_name'] == 'InputLayer':
-        layer['config'].pop('batch_shape', None)  # Remove batch_shape if present
-
-# Save the updated configuration
-with open("updated_model.keras", "w") as f:
-    json.dump(model_config, f)
-
-model = tf.keras.models.load_model("updated_model.keras",custom_objects={"InputLayer": InputLayer}
-)
-
+# Load the pre-trained tokenizer used during model training
 tokenizer = joblib.load("tokenizer.pkl")
 
-
-# Tokenizer with a vocabulary size limit of 1000 words
-tokenizer = Tokenizer(num_words=1000)  # Limit the tokenizer to the top 1000 words
-
-# MongoDB connection (use a single client connection for the app's lifetime)
+# MongoDB connection (use environment variable for Render deployment)
 try:
     print("Connecting to MongoDB...")
-     client = MongoClient(os.environ.get("MONGODB_URI", "mongodb://localhost:27017/"))
-     db = client["sentiment_analysis_db"]
+    client = MongoClient(os.environ.get("MONGODB_URI", "mongodb://localhost:27017/"))
+    db = client["sentiment_analysis_db"]
     collection = db["reviews"]
-    
+
     # Create indexes to improve query performance
     collection.create_index([("sentiment", ASCENDING)])
     collection.create_index([("timestamp", ASCENDING)])
@@ -60,10 +40,11 @@ try:
 except Exception as e:
     print("MongoDB connection error:", str(e))
 
+
 @app.route('/')
 def index():
     return render_template_string("""
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -327,10 +308,9 @@ def analyze():
         return jsonify({"sentiment": sentiment})
     return jsonify({"error": "No review provided"}), 400
 
-if __name__ == '__main__':
-   port = int(os.environ.get("PORT", 5000))
-   app.run(host="0.0.0.0", port=port)
 
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
 
 
 
