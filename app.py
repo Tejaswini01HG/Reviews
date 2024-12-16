@@ -19,7 +19,8 @@ analyzer = SentimentIntensityAnalyzer()
 logging.basicConfig(level=logging.ERROR)
 
 # Load pre-trained Keras model and tokenizer
-model = load_model('mymodel.keras' ,custom_objects={'InputLayer': tf.keras.layers.InputLayer})
+model = tf.keras.models.load_model('mymodel.keras', custom_objects={'InputLayer': tf.keras.layers.Input})
+
 
 
 # Tokenizer with a vocabulary size limit of 1000 words
