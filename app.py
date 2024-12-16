@@ -10,6 +10,8 @@ import joblib  # For loading tokenizer
 import tensorflow as tf
 import json
 from keras.layers import InputLayer
+from tensorflow.keras.models import load_model
+import os
 # Initialize Flask app
 app = Flask(__name__)
 
@@ -20,10 +22,10 @@ analyzer = SentimentIntensityAnalyzer()
 logging.basicConfig(level=logging.ERROR)
 
 
-# Load the model file as JSON
-model_path = "mymodel.keras"
-with open(mymodel.keras, 'r') as f:
-    model_config = json.load(f)
+#from tensorflow.keras.models import load_model
+
+# Load the model
+model = tf.keras.models.load_model("mymodel.keras")
 
 # Inspect the InputLayer and adjust the config
 for layer in model_config['config']['layers']:
@@ -37,6 +39,7 @@ with open("updated_model.keras", "w") as f:
 model = tf.keras.models.load_model("updated_model.keras",custom_objects={"InputLayer": InputLayer}
 )
 
+tokenizer = joblib.load("tokenizer.pkl")
 
 
 # Tokenizer with a vocabulary size limit of 1000 words
@@ -45,8 +48,8 @@ tokenizer = Tokenizer(num_words=1000)  # Limit the tokenizer to the top 1000 wor
 # MongoDB connection (use a single client connection for the app's lifetime)
 try:
     print("Connecting to MongoDB...")
-    client = MongoClient("mongodb://localhost:27017/")
-    db = client["sentiment_analysis_db"]
+     client = MongoClient(os.environ.get("MONGODB_URI", "mongodb://localhost:27017/"))
+     db = client["sentiment_analysis_db"]
     collection = db["reviews"]
     
     # Create indexes to improve query performance
@@ -325,8 +328,8 @@ def analyze():
     return jsonify({"error": "No review provided"}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True)
-
+   port = int(os.environ.get("PORT", 5000))
+   app.run(host="0.0.0.0", port=port)
 
 
 
