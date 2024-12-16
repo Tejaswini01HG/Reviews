@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify, render_template_string
-import tensorflow as tf
 from datetime import datetime
 from pymongo import MongoClient, ASCENDING
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
@@ -8,7 +7,9 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import joblib  # For loading tokenizer
-
+import tensorflow as tf
+import json
+from keras.layers import InputLayer
 # Initialize Flask app
 app = Flask(__name__)
 
@@ -18,8 +19,23 @@ analyzer = SentimentIntensityAnalyzer()
 # Set up logging for error tracking
 logging.basicConfig(level=logging.ERROR)
 
-# Load pre-trained Keras model and tokenizer
-model = tf.keras.models.load_model('mymodel.keras', custom_objects={'InputLayer': tf.keras.layers.Input})
+
+# Load the model file as JSON
+model_path = "mymodel.keras"
+with open(mymodel.keras, 'r') as f:
+    model_config = json.load(f)
+
+# Inspect the InputLayer and adjust the config
+for layer in model_config['config']['layers']:
+    if layer['class_name'] == 'InputLayer':
+        layer['config'].pop('batch_shape', None)  # Remove batch_shape if present
+
+# Save the updated configuration
+with open("updated_model.keras", "w") as f:
+    json.dump(model_config, f)
+
+model = tf.keras.models.load_model("updated_model.keras",custom_objects={"InputLayer": InputLayer}
+)
 
 
 
